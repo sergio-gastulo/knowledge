@@ -38,7 +38,7 @@ $descripcion = READ-HOST 'Poner breve descripcion'
 $value = "$date,$monto,$descripcion,$selectedWord"
 
 #   The path of the csv file
-$paths = 'C:\Users\sgast\Documents\excel\cuentas.csv'
+$paths = 'C:\Users\sgast\Documents_personal\excel\cuentas.csv'
 
 #   Appending the row to the csv file
 add-content -path $paths -value "`n$value"
