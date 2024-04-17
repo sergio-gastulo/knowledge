@@ -21,7 +21,3 @@ pip install $library
 $vscode_path = "C:\Users\sgast\python_files"
 cd $vscode_path
 
-#openning vscode
-code .
-
-
