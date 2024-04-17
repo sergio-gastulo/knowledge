@@ -16,8 +16,3 @@ $library = Read-Host 'Lib to install'
 
 #installing such library
 pip install $library
-
-#returning to python environment
-$vscode_path = "C:\Users\sgast\python_files"
-cd $vscode_path
-
