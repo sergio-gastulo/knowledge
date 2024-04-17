@@ -1,3 +1,8 @@
+<#
+    Installing packages on python takes a while since "cd"ing to scripts at every step to install
+    a library is really tedious.
+    Thats why I created a ps1 file to automatize the labor
+#>
 
 #Moving to the path of the python.exe file
 $script_path = 'C:\Program Files\Python312'
