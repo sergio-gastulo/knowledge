@@ -1,0 +1,3 @@
+[submodule "sql_knowledge"]
+	path = sql_knowledge
+	url = https://github.com/sergio-gastulo/knowledge
