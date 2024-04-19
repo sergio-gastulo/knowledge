@@ -8,24 +8,20 @@ Created on Fri Mar 15 10:51:29 2024
 import numpy as np
 import matplotlib.pyplot as plt
 
-#%%
-
-"""
-    This function solves a problem of the form 
-    
-    dY/dx = F(x,Y)
-    0 \leq x \leq upperbound
-    Y(0) = y0
-
-"""
 
 def runge_kutta_4(
         F: callable, 
         upper_bound: float, 
         zero_condition: np.array, 
         n_points: int,
-        dim:int) -> np.array:
+        dim:int) -> np.array:    
     
+    """
+        This function solves a problem of the form 
+        dY/dx = F(x,Y)
+        0 \leq x \leq upperbound
+        Y(0) = y0
+    """
     solution = np.zeros((n_points, dim), float)
     interval = np.linspace(0, upper_bound, n_points)
     step = (upper_bound)/n_points
@@ -41,71 +37,55 @@ def runge_kutta_4(
     
     return solution
 
-#%%
 
-"""
+def runge_testing()-> None:
+    """
+        Testing Runge-Kutta 4 with the ODE:
+        x' = -y
+        y' = x
+        (x,y)(0) = (1,0)
+        0 \leq t \leq pi/2
+        
+        with exact solution:
+        x,y = cos(t),sin(t)
+    """
+    f = lambda t,x : np.array([-x[1],x[0]])
+    b = np.pi/2
+    x0 = np.array([1,0])
+    n = 100
 
-    Testing Runge-Kutta 4 with the ODE:
-    x' = -y
-    y' = x
-    (x,y)(0) = (1,0)
-    0 \leq t \leq pi/2
-    
-    with exact solution:
-    x,y = cos(t),sin(t)
+    xx = np.linspace(0,b,n)
+    A = runge_kutta_4(
+        F=f, 
+        upper_bound=b, 
+        zero_condition=x0, 
+        n_points=n,
+        dim=2)
 
-"""
+    plt.scatter(xx, 
+                A[:,0],
+                s = 2.5, 
+                label = 'Aprox of $x = \cos(t)$')
+    plt.plot(
+        xx,
+        np.cos(xx), 
+        label = 'Solution $x = \cos(t)$')
 
-f = lambda t,x : np.array([-x[1],x[0]])
-b = np.pi/2
-x0 = np.array([1,0])
-n = 100
+    plt.scatter(xx, 
+                A[:,1],
+                s = 2.5, 
+                label = 'Aprox of $y = \sin(t)$')
 
-xx = np.linspace(0,b,n)
-A = runge_kutta_4(
-    F=f, 
-    upper_bound=b, 
-    zero_condition=x0, 
-    n_points=n,
-    dim=2)
+    plt.plot(
+        xx,
+        np.sin(xx), 
+        label = 'Solution $y = \sin(t)$')
 
-plt.scatter(xx, 
-            A[:,0],
-            s = 2.5, 
-            label = 'Aprox of $x = \cos(t)$')
-plt.plot(
-    xx,
-    np.cos(xx), 
-    label = 'Solution $x = \cos(t)$')
+    plt.xlabel('$t$ range')
+    plt.title('Approx solution vs real solution')
+    plt.legend()
+    plt.show()
 
-plt.scatter(xx, 
-            A[:,1],
-            s = 2.5, 
-            label = 'Aprox of $y = \sin(t)$')
-
-plt.plot(
-    xx,
-    np.sin(xx), 
-    label = 'Solution $y = \sin(t)$')
-
-plt.xlabel('$t$ range')
-plt.title('Approx solution vs real solution')
-plt.legend()
-plt.show()
-
-del(f,b,x0,n,xx,A)
-
-#%%
-
-"""
-    Shooting linear method
-    the following functions returns a discretization of the ODE
-    y'' = p(t) y' + q(t) y + r(t)
-    with 
-        y(0) = alpha,
-        y(b) = beta
-    
-"""
 
 def shooting_method(
         p: callable,
@@ -116,6 +96,15 @@ def shooting_method(
         beta: float,
         n_points: int)->np.array:
     
+    """
+        Shooting linear method
+        the following functions returns a discretization of the ODE
+        y'' = p(t) y' + q(t) y + r(t)
+        with 
+            y(0) = alpha,
+            y(b) = beta
+    """
+
     F = lambda x,z : np.array([
         z[1],
         q(x)*z[0]+p(x)*z[1]+r(x),
@@ -137,37 +126,32 @@ def shooting_method(
     return(solution)
 
 
-#%%
+def shooting_method_testing()->None:
+    """
+        We will test it on y'' + y = 0
+    """
+    p = lambda x: 0
+    q = lambda x: -1
+    r = lambda x: 0
+    b = np.pi/2
+    alpha = 0
+    beta = 1
+    n = 20
+    U = shooting_method(p, q, r, b, alpha, beta, n)
+    h = b/n
+    t = np.linspace(0,b,n)
+    plt.scatter(t,U, c = 'red')
 
-"""
-    We will 
-"""
-
-p = lambda x: 0
-q = lambda x: -1
-r = lambda x: 0
-b = np.pi/2
-alpha = 0
-beta = 1
-n = 20
-U = shooting_method(p, q, r, b, alpha, beta, n)
-h = b/n
-t = np.linspace(0,b,n)
-plt.scatter(t,U, c = 'red')
-
-#VERIFICANDO CON SOLUCIÓN EXACTA:
-g = lambda x: np.sin(x)
-X = np.linspace(0,b,30)
-plt.plot(X,g(X), c= 'blue')
-plt.legend(["Discretización de y","Solución exacta y = f(x) = sinh(x)"])
+    #VERIFICANDO CON SOLUCIÓN EXACTA:
+    g = lambda x: np.sin(x)
+    X = np.linspace(0,b,30)
+    plt.plot(X,g(X), c= 'blue')
+    plt.legend(["Discretización de y","Solución exacta y = f(x) = sinh(x)"])
 
 
-del(p,q,r,alpha, b,beta, U,h,t,g,X,n)
-
-#%%
-
-
-
+if __name__ == '__main__':
+    runge_testing()
+    shooting_method()
 
 
 
