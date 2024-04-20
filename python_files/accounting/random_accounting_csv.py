@@ -8,6 +8,8 @@ import numpy as np
 import numpy.random as rand
 import os
 import pandas as pd
+from datetime import datetime as dt
+from datetime import timedelta
 
 
 def random_dates(first_day:str, last_day:str, size:int)->list:
@@ -15,17 +17,17 @@ def random_dates(first_day:str, last_day:str, size:int)->list:
         This funciton generates a random array of dates
     """
     #first and last day must be in the following format
-    #YEAR-MONTH-DAY
-    f_day = np.datetime64(first_day)
-    l_day = np.datetime64(last_day)
+    #DAY-MONTH-YEAR
+    l_day = dt.strptime(last_day,"%d-%m-%Y")
+    f_day = dt.strptime(first_day,"%d-%m-%Y")
 
-    #the difference between each day
-    delt = (l_day - f_day).astype(int)
+    delt = (l_day - f_day).days
 
-    #the list of random dates
-    rd_dates = np.datetime_as_string(
-        rand.randint(delt+1, size=size) + f_day,
-        unit = 'D')
+    rd_dates = [
+        (f_day + 
+        timedelta(days = rand.randint(delt)))
+        .strftime("%d-%m-%Y") 
+        for _ in range(size)]
 
     return rd_dates
 
@@ -55,8 +57,9 @@ def random_accounting(first_day:str,last_day:str, size:int)->None:
         'RECIBO',   # money i spend on me, monthly like spotify or netflix
         'VARIOS',   # expenses which idk how to label them
         ]
+    
     #not my produest matrix, im really considering to avoid Description but the script resumen_cuentas works with it, so i cannot delete it
-    #i probably will change the code using try except KeyError to check if the df has Decription on it or not
+    #i will probably change the code using try except KeyError to check if the df has Decription on it or not
     #in case it does, eveything might remain the same
     #in coes it doesnt, then decription will have to be dropped from resumen_cuentas 
     data = np.transpose([
@@ -71,6 +74,7 @@ def random_accounting(first_day:str,last_day:str, size:int)->None:
     filename = r'\accounting.csv'
     
     file_path = path+filename
+    
     # #saving col names
     # with open(filename, 'w') as f:
     #     f.write(','.join(list_of_headers)+'\n')
@@ -79,15 +83,19 @@ def random_accounting(first_day:str,last_day:str, size:int)->None:
     # with open(filename, 'a') as f:
     #     np.savetxt(f, data, delimiter = ',')
 
-    #So, it seems numpy cannot handle nonnumerical matrices, we are forced to use conver data into a dataframe and exportit using tocsv
-    pd.DataFrame(data, columns=list_of_headers).to_csv(file_path, index=False)
+    #So, it seems numpy cannot handle nonnumerical matrices, we are forced to conver the data into a dataframe and exportit using tocsv
+    pd.DataFrame(
+        data, 
+        columns=list_of_headers).to_csv(
+            file_path, 
+            index=False)
 
     os.system(f'notepad {file_path}')
 
 
 if __name__ == '__main__':
 
-    print("Prompt the dates in the following format: YEAR-MONTH-DAY")
+    print("Prompt the dates in the following format: DD-MM-YYYY")
     first_day = input("Prompt the firstday to work with: ")
     last_day = input("Prompt the lastday to work with: ")
     size = int(input("size of the csv to deal with: "))
