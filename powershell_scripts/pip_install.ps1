@@ -17,6 +17,7 @@ $library = Read-Host 'Lib to install'
 #installing such library
 pip install $library
 
+#moving to my vscode path
 $vscode = 'C:\Users\sgast\CODING'
 cd $vscode
 
