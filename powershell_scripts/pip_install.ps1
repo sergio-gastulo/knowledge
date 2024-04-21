@@ -20,4 +20,3 @@ pip install $library
 $vscode = 'C:\Users\sgast\CODING'
 cd $vscode
 
-#more lines of code for testing
