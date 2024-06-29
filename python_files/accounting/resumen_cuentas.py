@@ -9,6 +9,30 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime as dt 
 from numpy import divide as d
+import requests
+from bs4 import BeautifulSoup
+
+
+def dolar_getter()->float:
+    """
+        This function queries the USD -> PEN exchange rate returning a float
+    """
+
+    #the page i'm taking the exchange rate
+    URL = r"https://securex.pe"
+
+    #requesting the url
+    page = requests.get(URL)
+    
+    sopa = BeautifulSoup(page.content, "html.parser")
+    
+    #sopa.prettify() to webscrapp the page
+    #finding the value i want
+    results = sopa.find('div', class_ = 'col-md-5 col-xs-5 custom-col text-center')
+    
+    dollar_to_soles = float(results.find_all('span')[1].text)
+
+    return dollar_to_soles
 
 
 def personal_settings()->None:
@@ -85,6 +109,13 @@ def supreme_loading(path:str)->pd.DataFrame:
     df['Year'] = df.Date.dt.year
     df['Day'] = df.Date.dt.day
     
+    def dolar_converter_pandas(df_pandas:pd.DataFrame)->None:
+        dol_value = dolar_getter()
+        df_pandas.loc[df_pandas['Category'] == 'USD_INC', 'Amount'] *= dol_value
+        df_pandas.loc[df_pandas['Category'] == 'USD_INC', 'Category'] = 'INGRESO'
+    
+    dolar_converter_pandas(df)
+
     return df
 
 
@@ -252,7 +283,6 @@ def bar_plot_grouped_days(df:pd.DataFrame)->None:
     plt.xlabel('Dia')
     plt.ylabel('Cantidad')
     plt.show()
-
 
 
 def sort_month_year(month_year:str)-> tuple:
@@ -574,7 +604,10 @@ def accumulative_earnings(df:pd.DataFrame)->None:
     """
 
     #Saving percentage
-    porcentaje_ahorro = 0.15
+    # porcentaje_ahorro = 0.15
+    
+    #No percentage:
+    porcentaje_ahorro = 0.0
     #almacenating the difference of the days to divide 
     diferencia_dias = len(set(df.Date.dt.date))
     
@@ -606,8 +639,8 @@ def accumulative_earnings(df:pd.DataFrame)->None:
     #without INCOMES and HOUSE expenses, so we can track their behaviour under the main graph, youll check it later
     filtered_data = (df[
         (df.Category!='INGRESO') 
-        & 
-        (df.Category!= 'CASA')
+        # & 
+        # (df.Category!= 'CASA')
         ]
         .groupby('Date')['Amount']
         .sum()
@@ -671,9 +704,11 @@ def accumulative_earnings(df:pd.DataFrame)->None:
             va='bottom',
             fontsize = 10
             )
-    
+    banco_de_la_nacion_6_3_2024 = 24_191.51
+    ahorro = df_alterada_con_promedio.Cumsum.iloc[-1] + banco_de_la_nacion_6_3_2024
+    ahorro_text = f'S/.{ahorro:.2f}'
     #decorators for plotting 
-    ax.set_title('Evolucion de los ingresos acumulados vs gastos')
+    ax.set_title(f'Ingresos acumulados y gastos. Ahorro: {ahorro_text}')
     ax.set_xlabel('Fechas')
     ax.set_ylabel('Ingresos divididos - gastos')
     ax.legend()
@@ -683,7 +718,7 @@ def accumulative_earnings(df:pd.DataFrame)->None:
 if __name__ == '__main__':
     
     #path of the csv
-    path = r'C:\Users\sgast\accounting.csv'
+    path = r'c:\Users\sgast\Documents_personal\excel\cuentas.csv'
     
     #personal settings to mpl
     personal_settings()
@@ -695,13 +730,13 @@ if __name__ == '__main__':
     df_per = col_periodo(df)
     
     #which periods would be worth to analyze
-    periodo_to_analyze = ['Mar-2023','Apr-2023']
+    periodo_to_analyze = ['May-2024','Jun-2024']
     
     #plotting
     ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
     
     # as this plot was not worh, we are not doing showing it, but the function works so...
-    bar_plot_grouped_days(df)
+    # bar_plot_grouped_days(df)
     
     #plotting
     acumulados_por_periodos(df_per)
@@ -712,15 +747,8 @@ if __name__ == '__main__':
     #plotting
     accumulative_earnings(df)
 
-
-
-
-
-
-
-
-
-
-
+    dolar = dolar_getter()
+    print("Dolar value: ", dolar)
+    print("Perdido por tio: ",3000-dolar*800)
 
 
