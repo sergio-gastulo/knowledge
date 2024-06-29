@@ -730,14 +730,13 @@ if __name__ == '__main__':
     df_per = col_periodo(df)
     
     #which periods would be worth to analyze
-    periodo_to_analyze = ['May-2024','Jun-2024']
+    periodo_to_analyze = ['April-2024','May-2024','Jun-2024']
     
     #plotting
     ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
     
     # as this plot was not worh, we are not doing showing it, but the function works so...
     # bar_plot_grouped_days(df)
-    
     #plotting
     acumulados_por_periodos(df_per)
     
