@@ -314,95 +314,55 @@ def acumulados_por_periodos(df_per:pd.DataFrame)->None:
     
     #coping the dataframe so its not modify, since df_per will be used in the ongoing
     df_local = df_per.copy()
-    
-    #as always, INCOMES and BLINDS are multiplied by a negative value
+
+    #expenses (neither ingresos nor blinds) should be always negative:
     df_local.loc[
-        (df_local.Category=='INGRESO') 
-        | 
-        (df_local.Category=='BLIND'),'Amount'] *=-1
-    
-    #BUT, as we now want to consider BOTH of them, and track a POSITIVE behaviour, INGRESO and BLIND will be consider as positive values whereas the other categories will be consider as negative, a BAD behaviour
-    df_local.loc[:,'Amount'] *=-1
+            (df_local.Category!='INGRESO') & (df_local.Category!='BLIND'),'Amount']*=-1
     
     #dataframe of expenses
     df_gastos = {
-        #we wanna track with INCOMES and without INCOMES, track wether more money leads to more expenses or not
-        'sin_ingreso':(df_local
-                       [   #filtering without INCOMES and BLIND
-                           (df_local.Category!='INGRESO')
-                           &
-                           (df_local.Category != 'BLIND')
-                           ]
-                       #Grouped by period
-                       .groupby('Periodo')['Amount']
-                       .sum()
-                       .reset_index()
-                       #sorted by PERIOD, using the requested function
-                       .sort_values(
-                           by='Periodo', 
-                           key=lambda x: x.map(sort_month_year)
-                             )
-                        )
-        ,
-        #and studying with INCOMES, seeing the requested differences 
-        'con_ingreso':(df_local
-                       .groupby('Periodo')['Amount']
-                       .sum()
-                       .reset_index()
-                       .sort_values(
-                           by='Periodo', 
-                           key=lambda x: x.map(sort_month_year)
-                           )
-                       )
+    
+        'sin_ingreso':(df_local[
+            (df_local.Category!='INGRESO') & (df_local.Category != 'BLIND')
+            ])
+            .groupby(['Periodo'])['Amount'].sum()
+            .sort_index(key= lambda x: x.map(sort_month_year)),
+        
+        'con_ingreso': df_local.groupby(['Periodo'])['Amount'].sum().sort_index(key= lambda x: x.map(sort_month_year)),
+
+        'solo_ingreso': (df_local[
+            (df_local.Category=='INGRESO') | (df_local.Category == 'BLIND')]
+            .groupby(['Periodo'])['Amount'].sum()
+            .sort_index(key= lambda x: x.map(sort_month_year)))
         }
     
     #Creating the figure and axis where our plot will be created, is necessary to plot both graphs on the same plot to visualize their difference
     fig, ax = plt.subplots()
     
-    #plotting without INCOMES on the same plot
-    ax.plot(
-            df_gastos['sin_ingreso'].Periodo,
-            df_gastos['sin_ingreso'].Amount,
-            label = 'Gastos sin ingresos ni blinds',
-            color = (0.298, 0.831, 0.769),
-            linewidth = 2.5,
-            #to highlight the dots
-            marker = 'o')
+    #without incomes, with incomes and incomes only
+    cat_values = ['sin_ingreso','con_ingreso','solo_ingreso']
+
+    #colors to match the plot
+    colors = [(0.573, 0.573, 1),(0.259, 0.91, 0.525),(0.573, 0.573, 1)]
     
-    #Decorator, as usual, to track the actual values of the previously highlighted dots
-    for j, value in enumerate(df_gastos['sin_ingreso'].Amount):
-        plt.text(
-            j, 
-            value, 
-            f'{value:.1f}', 
-            ha='center', 
-            va='bottom'
-            )
-    
-    #plotting with INCOMES on the same plot
-    ax.plot(
-            df_gastos['con_ingreso'].Periodo,
-            df_gastos['con_ingreso'].Amount,
-            label = 'Gastos con ingresos y blinds',
-            color = (0.592, 0.055, 0.929),
-            linewidth = 2.5,
-            #to highlight the dots
-            marker = 'o')
-    
-    #Decorator, as usual, to track the actual values of the previously highlighted dots
-    for j, value in enumerate(df_gastos['con_ingreso'].Amount):
-        plt.text(
-            j, 
-            value, 
-            f'{value:.1f}', 
-            ha='center', 
-            va='bottom'
-            )
-    #Decorators for the name
+    #the plot itself:
+    for i, cat_val in enumerate(cat_values):
+        ax.plot(df_gastos[cat_val],
+                linewidth = 2.5,
+                marker = 'o',
+                label = f'gastos {cat_val}',
+                color = colors[i])
+        
+        #some markers:
+        for j, value in enumerate(df_gastos[cat_val].values):
+            plt.text(j, value, 
+                f'{value:.1f}', 
+                ha='center', va='bottom'
+                )
     ax.set_xlabel('Periodo')
-    ax.set_ylabel('Cantidad')
-    ax.legend()
-    ax.set_title('Gastos sin y con ingresos')
+    ax.set_ylabel('Montos')
+    ax.set_title('Movimiento de los gastos agrupados por periodo a través del tiempo')
+    plt.legend()
     plt.show()
 
 
@@ -484,6 +444,49 @@ def evolucion_de_gastos_vs_tiempo(df:pd.DataFrame)->None:
     plt.title('Evolucion de SOLO GASTOS con el tiempo')
     plt.xlabel('Fechas')
     plt.xlabel('Gastos puntuales')
+    plt.show()
+
+
+def acumulados_por_periodos_y_categoria(df_per:pd.DataFrame)->None:
+    """
+    This function does exactly what the above funciton does. The main difference is it plots only expenses on logaritmic scale
+    and per Category
+    """
+    df_local = df_per.copy()
+    #only expenses:
+    df_local = df_local[(df_local.Category!='INGRESO') & (df_local.Category!='BLIND') & (df_local.Category!='NULL')]
+    
+    #list of categories present on df_per
+    category_list = df_local.Category.unique().tolist()
+    
+    #colors from green to blue, asked chatgpt for this, btw it does not go to blue lol
+    colors_2 = [
+        '#00FF00',  # Green
+        '#1AFF33', '#33FF66', '#4DFF99', '#66FFCC', '#80FFFF', '#99FFFF', '#B3FFFF', '#CCFFFF', '#E6FFFF', '#FFFFFF',
+        '#0000FF'   # Blue
+    ]
+
+    #creating the plot
+    fig, ax = plt.subplots()
+
+    #iterating over the value of the categories.
+    #Also, using enumerate to iterate at pair with category list
+    for i,cat in enumerate(category_list):
+        ax.plot(
+            df_local[df_local.Category==cat].Periodo,
+            df_local[df_local.Category==cat].Amount,
+            label = f'Gastos asociados a {cat}',
+            linewidth = 2.5,
+            marker = 'o',
+            c = colors_2[i]
+        )
+
+    #scaling to log because some expenses overflow the other ones 
+    ax.set_yscale('log')
+    ax.set_xlabel('Periodo')
+    ax.set_ylabel('Cantidad')
+    ax.set_title('Movimiento de los gastos agrupados por periodo a través del tiempo')
+    plt.legend()
     plt.show()
 
 
@@ -730,15 +733,18 @@ if __name__ == '__main__':
     df_per = col_periodo(df)
     
     #which periods would be worth to analyze
-    periodo_to_analyze = ['April-2024','May-2024','Jun-2024']
+    periodo_to_analyze = ['Apr-2024','May-2024','Jun-2024']
     
     #plotting
-    ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
+    #not worth it, it works though
+    # ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
     
     # as this plot was not worh, we are not doing showing it, but the function works so...
     # bar_plot_grouped_days(df)
+
     #plotting
     acumulados_por_periodos(df_per)
+    acumulados_por_periodos_y_categoria(df_per)
     
     #plotting 
     evolucion_de_gastos_vs_tiempo(df)
@@ -748,6 +754,7 @@ if __name__ == '__main__':
 
     dolar = dolar_getter()
     print("Dolar value: ", dolar)
+
     print("Perdido por tio: ",3000-dolar*800)
 
 
