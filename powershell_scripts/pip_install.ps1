@@ -6,7 +6,7 @@
 
 #Moving to the path of the python.exe file
 $script_path = 'C:\Program Files\Python312'
-cd $script_path
+Set-Location $script_path
 
 #Upgrading pip
 python -m pip install --upgrade pip
@@ -19,5 +19,5 @@ pip install $library
 
 #moving to my vscode path
 $vscode = 'C:\Users\sgast\CODING'
-cd $vscode
+Set-Location $vscode
 
