@@ -1,12 +1,11 @@
 #In order to open it via egde (faster than photos) the namefiles has to be joint with "_"
 
 #All whatsapp downloads files
+$wsp_images = Get-ChildItem "C:\Users\sgast\Downloads\" -Filter 'Wha*'
 
-$download_path = "C:\Users\sgast\Downloads\"
-
-#every png file name is replaced with no spaces
-Get-ChildItem $download_path | ForEach-Object { 
-	Rename-Item $_.Fullname -newname ($_.Name -replace ' ', '_') 
+#every png file name is replaced with no spaces so it can be openned on edge
+foreach ($item in $wsp_images) {
+	Rename-Item $item.Fullname -newname ($item.Name -replace ' ', '_') 
 }
 
 #the month we are currently paying
@@ -17,7 +16,9 @@ if (-not (test-path -Path $path)){
 }
 
 #moving each wsp png file to the desired carpet 
-Get-ChildItem $download_path -Filter 'Wha*'| ForEach-Object {Move-Item $_.FullName -Destination $path}
+foreach ($currentItemName in $wsp_images) {
+	Move-Item $currentItemName.FullName -Destination $path
+}
 
 #it opens each file and then asks for its coresponding name with png already
 Get-ChildItem $path -Filter 'Wha*' | ForEach-Object {
