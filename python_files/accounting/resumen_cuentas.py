@@ -452,7 +452,7 @@ def acumulados_por_periodos_y_categoria(df_per:pd.DataFrame)->None:
     This function does exactly what the above funciton does. The main difference is it plots only expenses on logaritmic scale
     and per Category
     """
-    df_local = df_per.copy()
+    df_local = df_per.copy().sort_values(by = 'Periodo', key= lambda x: x.map(sort_month_year))
     #only expenses:
     df_local = df_local[(df_local.Category!='INGRESO') & (df_local.Category!='BLIND') & (df_local.Category!='NULL')]
     
