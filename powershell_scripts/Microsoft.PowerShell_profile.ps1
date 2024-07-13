@@ -108,6 +108,7 @@ function DarkLightMode {
 
     if ($val -eq "W" ){
 
+        #by default my working hours theme is light mode
         $pict = Join-Path -Path $wall_path -ChildPath "working.jpg"
 
         if (IsDarkModeEnabled){
@@ -116,6 +117,7 @@ function DarkLightMode {
     
     } else {
         
+        #if I'm not working I use darkmode
         $wallpapers = Get-ChildItem (Join-Path -Path $wall_path -ChildPath "real_wallpapers")
         $rand = Get-Random -Maximum ($wallpapers).count
 
