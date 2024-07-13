@@ -95,19 +95,41 @@ function Set-MousePositionAndClick {
 }
 
 function DarkLightMode { 
+
+    $wall_path = "C:\Users\sgast\Documents_personal\images\wallpapers"
     
     $val = Read-Host "is this Personal hours or (W)orking hours"
-    
+
+    $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+
+    function IsDarkModeEnabled {
+        ((Get-ItemPropertyValue -Path $registryPath -Name AppsUseLightTheme) -eq 0) -and ((Get-ItemPropertyValue -Path $registryPath -Name SystemUsesLightTheme) -eq 0)
+    }
+
     if ($val -eq "W" ){
-        $pict = "C:\Users\sgast\Documents_personal\images\wallpapers\working.jpg"
+
+        $pict = Join-Path -Path $wall_path -ChildPath "working.jpg"
+
+        if (IsDarkModeEnabled){
+            Start-Process ms-settings:colors
+        }
+    
     } else {
-        $pict = "C:\Users\sgast\Documents_personal\images\wallpapers\real_wallpapers\asumcaunsa.jpg"
+        
+        $wallpapers = Get-ChildItem (Join-Path -Path $wall_path -ChildPath "real_wallpapers")
+        $rand = Get-Random -Maximum ($wallpapers).count
+
+        $pict = $wallpapers[$rand].FullName
+
+        if (-not (IsDarkModeEnabled)){
+            Start-Process ms-settings:colors
+        }
+        
     }
 
     Set-AllDesktopWallpapers $pict
 
-    Start-Process ms-settings:colors
-} 
+}
 
 function Screenshot-ToEdge {
 
