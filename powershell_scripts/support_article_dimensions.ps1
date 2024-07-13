@@ -1,5 +1,5 @@
 
-$path = "c:\Users\sgast\Wolfram\Support_Articles\System_Modeler"
+$path = (Resolve-Path .)
 
 $link = Read-Host "link"
 
