@@ -14,6 +14,6 @@ move-item -path $path_1\$name_1 -destination $path_2
 
 rename-item -path $path_2\$name_1 -newname $path_2\$name_2
 
-start 'C:\Users\sgast\Documents\important_cv' 
+Start-Process 'C:\Users\sgast\Documents\important_cv' 
 
-start 'https://pdfjoiner.com/'
+Start-Process 'https://pdfjoiner.com/'
