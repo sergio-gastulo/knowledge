@@ -11,7 +11,7 @@ import datetime as dt
 from numpy import divide as d
 import requests
 from bs4 import BeautifulSoup
-
+from matplotlib import ticker 
 
 def dolar_getter()->float:
     """
@@ -70,18 +70,12 @@ def dates_in_range(df:pd.DataFrame)->list:
 def supreme_loading(path:str)->pd.DataFrame:
     '''
         This function is responsible for uploading the CSV into a dataframe, with pre-filled data, hence the importance of the previous function. 
-        Additionally, it is responsible for obtaining the columns year, month, and day.
     '''
     #just loading the csv
-    df = pd.read_csv(
-        path,
-        index_col= None)
+    df = pd.read_csv(path, index_col= None)
     
     #converting Date into datetime format
-    df.Date = pd.to_datetime(
-        df.Date,
-        dayfirst=True,
-        format = '%d-%m-%Y')
+    df.Date = pd.to_datetime( df.Date, dayfirst=True, format = '%d-%m-%Y')
 
     #Creating NULL values to append in the dataframe, just for analisys porpouses    
     value_dict = {
@@ -96,11 +90,9 @@ def supreme_loading(path:str)->pd.DataFrame:
     #concatenating them
     df = pd.concat([df,df_ghost], ignore_index=True)
     
-    
-    #It seems i was uploading datetime types twice instead of just uploading them after the merge
-    df.Date = pd.to_datetime(
-        df.Date,
-        format = "%d-%m-%Y")
+    #Disclaimer: the reason why it is uploaded twice is because dates_in_range function depends
+    #on the datetime format of the dataframe
+    df.Date = pd.to_datetime(df.Date,format = "%d-%m-%Y")
     
     df.Category = df.Category.str.upper()
 
@@ -109,6 +101,7 @@ def supreme_loading(path:str)->pd.DataFrame:
     df['Year'] = df.Date.dt.year
     df['Day'] = df.Date.dt.day
     
+    #Here, we convert dolar values into PEN so that the analysis is on PEN
     def dolar_converter_pandas(df_pandas:pd.DataFrame)->None:
         dol_value = dolar_getter()
         df_pandas.loc[df_pandas['Category'] == 'USD_INC', 'Amount'] *= dol_value
@@ -149,9 +142,12 @@ def col_periodo(df:pd.DataFrame)->pd.DataFrame:
     return df_per
 
 
+#deprecadet function, not using it on the analysis at all,
+#But it works! give it a try if you 
 def ploteo_de_barras_vs_periodo(
         df_per:pd.DataFrame,
         periodo_to_analyze:list)->None:
+
     '''
         This function generates a plot of expenses per period grouped by category.
     '''
@@ -237,6 +233,8 @@ def ploteo_de_barras_vs_periodo(
         plt.show()
 
 
+#deprecadet function, not using it on the analysis at all,
+#But it works! give it a try if you 
 def bar_plot_grouped_days(df:pd.DataFrame)->None:
     """
         This funciton generates a barplot of the expenses per day, it does not show any interesting result, but it works
@@ -284,7 +282,7 @@ def bar_plot_grouped_days(df:pd.DataFrame)->None:
     plt.ylabel('Cantidad')
     plt.show()
 
-
+#literally perfect don't know if it can be improved
 def sort_month_year(month_year:str)-> tuple:
     """
         This function does the following
@@ -305,14 +303,14 @@ def sort_month_year(month_year:str)-> tuple:
 
 def acumulados_por_periodos(df_per:pd.DataFrame)->None:
     '''
-        Now we want to know how much we are spending per month. 
+        Now we want to know how much we are spending per month per year. 
         We want to see accumulated income per month and accumulated expenses per month. 
         I think I'll use `df_per` because it's already accumulated by periods.
 
         This function does exactly the requested work: plots expenses per MONTH-YEAR=:PERIOD.
     '''
     
-    #coping the dataframe so its not modify, since df_per will be used in the ongoing
+    #coping the dataframe so its not modified, since df_per will be used in the ongoing
     df_local = df_per.copy()
 
     #expenses (neither ingresos nor blinds) should be always negative:
@@ -321,15 +319,15 @@ def acumulados_por_periodos(df_per:pd.DataFrame)->None:
     
     #dataframe of expenses
     df_gastos = {
-    
+        #sin_ingreso: means the expenes without incomes
         'sin_ingreso':(df_local[
             (df_local.Category!='INGRESO') & (df_local.Category != 'BLIND')
             ])
             .groupby(['Periodo'])['Amount'].sum()
             .sort_index(key= lambda x: x.map(sort_month_year)),
-        
+        #only incomes
         'con_ingreso': df_local.groupby(['Periodo'])['Amount'].sum().sort_index(key= lambda x: x.map(sort_month_year)),
-
+        #incomes - expenses, to see how much I lost
         'solo_ingreso': (df_local[
             (df_local.Category=='INGRESO') | (df_local.Category == 'BLIND')]
             .groupby(['Periodo'])['Amount'].sum()
@@ -343,22 +341,29 @@ def acumulados_por_periodos(df_per:pd.DataFrame)->None:
     cat_values = ['sin_ingreso','con_ingreso','solo_ingreso']
 
     #colors to match the plot
-    colors = [(0.573, 0.573, 1),(0.259, 0.91, 0.525),(0.573, 0.573, 1)]
+    colors = [(0.569, 0.569, 0.569),(0.29, 0.588, 0.659),(0.569, 0.569, 0.569)]
     
     #the plot itself:
     for i, cat_val in enumerate(cat_values):
-        ax.plot(df_gastos[cat_val],
-                linewidth = 2.5,
-                marker = 'o',
-                label = f'gastos {cat_val}',
-                color = colors[i])
+
+        #the lines that changes per period
+        ax.plot(df_gastos[cat_val], linewidth = 2, marker = 'o', label = f'{cat_val}', color = colors[i])
         
-        #some markers:
+        #adding the mean value per plotted line        
+        mean_value = df_gastos[cat_val].mean()
+        ax.axhline(y = mean_value, color=colors[i], linestyle='--')
+
+        #some markers to show the y-position:
         for j, value in enumerate(df_gastos[cat_val].values):
-            plt.text(j, value, 
-                f'{value:.1f}', 
-                ha='center', va='bottom'
-                )
+            plt.text(j, value, f'{value:.1f}', ha='center', va='bottom',fontsize=8)
+        
+        #adding the legend to the horizontal label line
+        plt.text(j-1, mean_value, f'Prom: {mean_value:.1f}')
+
+    #setting max amount of locators on x-axis, looked horrible without it
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
+
+    #weird titles:        
     ax.set_xlabel('Periodo')
     ax.set_ylabel('Montos')
     ax.set_title('Movimiento de los gastos agrupados por periodo a través del tiempo')
@@ -441,9 +446,10 @@ def evolucion_de_gastos_vs_tiempo(df:pd.DataFrame)->None:
                     linewidth=0.75)
     
     #Decorators for the plot
+    plt.ylim(0,500)  
     plt.title('Evolucion de SOLO GASTOS con el tiempo')
     plt.xlabel('Fechas')
-    plt.xlabel('Gastos puntuales')
+    plt.ylabel('Gastos puntuales')
     plt.show()
 
 
@@ -744,17 +750,18 @@ if __name__ == '__main__':
 
     #plotting
     acumulados_por_periodos(df_per)
-    acumulados_por_periodos_y_categoria(df_per)
     
-    #plotting 
-    evolucion_de_gastos_vs_tiempo(df)
+    # acumulados_por_periodos_y_categoria(df_per)
     
-    #plotting
-    accumulative_earnings(df)
+    # #plotting 
+    # evolucion_de_gastos_vs_tiempo(df)
+    
+    # #plotting
+    # accumulative_earnings(df)
 
-    dolar = dolar_getter()
-    print("Dolar value: ", dolar)
+    # dolar = dolar_getter()
+    # print("Dolar value: ", dolar)
 
-    print("Perdido por tio: ",3000-dolar*800)
+    # print("Perdido por tio: ",3000-dolar*800)
 
 
