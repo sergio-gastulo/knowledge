@@ -340,7 +340,7 @@ def acumulados_por_periodos(df_per:pd.DataFrame)->None:
     #without incomes, with incomes and incomes only
     cat_values = ['sin_ingreso','con_ingreso','solo_ingreso']
 
-    #colors to match the plot
+    #colors to match the plot (any feedback is taking into consideration)
     colors = [(0.569, 0.569, 0.569),(0.29, 0.588, 0.659),(0.569, 0.569, 0.569)]
     
     #the plot itself:
