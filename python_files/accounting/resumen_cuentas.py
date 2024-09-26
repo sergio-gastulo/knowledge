@@ -739,29 +739,29 @@ if __name__ == '__main__':
     df_per = col_periodo(df)
     
     #which periods would be worth to analyze
-    periodo_to_analyze = ['Apr-2024','May-2024','Jun-2024']
+    periodo_to_analyze = ['May-2024','Jun-2024','Jul-2024','Aug-2024']
     
     #plotting
     #not worth it, it works though
-    # ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
+    ploteo_de_barras_vs_periodo(df_per, periodo_to_analyze)
     
     # as this plot was not worh, we are not doing showing it, but the function works so...
-    # bar_plot_grouped_days(df)
+    bar_plot_grouped_days(df)
 
     #plotting
     acumulados_por_periodos(df_per)
     
-    # acumulados_por_periodos_y_categoria(df_per)
+    acumulados_por_periodos_y_categoria(df_per)
     
     # #plotting 
-    # evolucion_de_gastos_vs_tiempo(df)
+    evolucion_de_gastos_vs_tiempo(df)
     
     # #plotting
-    # accumulative_earnings(df)
+    accumulative_earnings(df)
 
-    # dolar = dolar_getter()
-    # print("Dolar value: ", dolar)
+    #dolar = dolar_getter()
+    #print("Dolar value: ", dolar)
 
-    # print("Perdido por tio: ",3000-dolar*800)
+    #print("Perdido por tio: ",3000-dolar*800)
 
 
