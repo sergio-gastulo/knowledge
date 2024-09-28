@@ -1,5 +1,3 @@
-function greet() {
-    console.log("Hello, World!");
-}
+let myName = "hello_world"
 
-greet()
+console.log(myName)
