@@ -1,3 +1,9 @@
-let myName = "hello_world"
+// let myName = prompt("ingresa tu nombre")
 
-console.log(myName)
+// document.write("hello " + myName + ", sos hermoso\n\n")
+
+document.addEventListener("click", myFunction);
+
+function myFunction() {
+    document.write(Math.pow(65,15));
+}
