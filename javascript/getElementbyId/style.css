@@ -1,0 +1,35 @@
+/* Custom button styles */
+.custom-button {
+    padding: 5px 5px;
+    font-size: 1pc;
+    color: white;
+    background-color: #3498db; /* Blue color */
+    border: none;
+    border-radius: 10px;
+    cursor: link-cursor;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Button hover effect */
+  .custom-button:hover {
+    background-color: #2980b9; /* Darker blue */
+  }
+  
+  /* Active/pressed effect */
+  .custom-button:active {
+    background-color: #1c6ea4; /* Even darker blue */
+  }
+  
+
+/* Style for the paragraph with id="para" */
+#para {
+    font-size: 18px;
+    color: #333; /* Default text color */
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    padding: 10px;
+    border: 1px solid #ddd; /* Optional border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background */
+  }
+  
