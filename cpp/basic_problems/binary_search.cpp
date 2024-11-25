@@ -1,16 +1,29 @@
 #include <iostream>
 using namespace std;
 
-void binary_search(){
-    cout << "hello world!"<< endl;
+void modifyByPointer(int* ptr) {
+    *ptr = 20; // Change the value at the memory address
 }
 
-int main(){
-    string my_var; 
-    cout << "ingresa tu nombre" << endl;
-    cin >> my_var;
-    cout << "que chevere te llamas" << my_var << endl;
+void modifyByReference(int& ref) {
+    ref = 30; // Change the original value directly
+}
 
-    binary_search();
+int main() {
+    
+    int num = 10;
+    cout << "Initial value: " << num << endl;
+    cout << "Memmory addess of num: " << &num << endl;
+
+    // Using a pointer
+    modifyByPointer(&num); // Pass the address of num
+    cout << "After modifyByPointer: " << num << endl;
+    cout << "Memmory addess of num: " << &num << endl;
+
+    // Using a reference
+    modifyByReference(num); // Pass num directly
+    cout << "After modifyByReference: " << num << endl;
+    cout << "Memmory addess of num: " << &num << endl;
+
     return 0;
 }
