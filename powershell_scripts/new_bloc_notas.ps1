@@ -4,7 +4,7 @@ $filename = Read-Host "Enter the file name"
 $carpet = Read-Host "ps1 or bloc"
 
 $ps1_path = $('C:\Users\sgast\CODING\powershell_scripts\'+$filename+'.ps1')
-$bloc_path = $('C:\Users\sgast\Documents_personal\bloc_notas\'+$filename+'.txt')
+$bloc_path = $('C:\Users\sgast\documents_personal\bloc_notas\'+$filename+'.txt')
 
 if ($carpet -eq 'ps1') {
 

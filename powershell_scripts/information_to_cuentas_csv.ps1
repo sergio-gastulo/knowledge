@@ -54,7 +54,7 @@ Write-Host " "
 
 
 #   The path of the csv file
-$paths = 'C:\Users\sgast\Documents_personal\excel\cuentas.csv'
+$paths = 'C:\Users\sgast\documents_personal\excel\cuentas.csv'
 
 if (([int]$monto -gt 200) -and (($selectedWord -ne "INGRESO") -and ($selectedWord -ne "USD_INC"))) {
     

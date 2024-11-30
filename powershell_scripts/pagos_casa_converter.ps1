@@ -9,7 +9,7 @@ foreach ($item in $wsp_images) {
 }
 
 #the month we are currently paying
-$path = "C:\Users\sgast\Documents_personal\excel\casa_accounting\" + (Read-Host "give the name of the month youre paying") + "\"
+$path = "C:\Users\sgast\documents_personal\excel\casa_accounting\" + (Read-Host "give the name of the month youre paying") + "\"
 
 if (-not (test-path -Path $path)){
 	mkdir $path
