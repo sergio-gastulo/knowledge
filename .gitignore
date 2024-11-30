@@ -10,3 +10,4 @@ python_files/menu
 python_files/accounting/testing.ipynb
 .vscode
 cpp/**/*.exe
+java/**/*.class
