@@ -5,10 +5,13 @@
 #>
 
 #Moving to the path of the python.exe file
-$script_path = 'C:\Program Files\Python312'
-Set-Location $script_path
+# $script_path = 'C:\Program Files\Python312'
+# Set-Location $script_path
 
 #Upgrading pip
+
+$dir = Resolve-Path .
+
 python -m pip install --upgrade pip
 
 #Reading the library to be installed
@@ -17,7 +20,6 @@ $library = Read-Host 'Lib to install'
 #installing such library
 pip install $library
 
-#moving to my vscode path
-$vscode = 'C:\Users\sgast\CODING'
-Set-Location $vscode
+#moving to old path
+Set-Location $dir
 
