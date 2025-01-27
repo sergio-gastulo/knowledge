@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <title>Shadow Manipulate</title>
+</head>
+<body>
+    <h1> Shadows </h1>
+    <div class="container">
+        <div class="item">
+            <div class="label_and_input">
+                <input type="range" min ="-1000" max ="1000" name="input1" id="shadow1"> <label for="input1">move horizontally</label>
+            </div>
+            <div class="label_and_input">
+                <input type="range" min ="-1000" max ="1000" name="input2" id="shadow2"> <label for="input2">move vertically</label>
+            </div>
+            <div class="label_and_input">
+                <input type="range" min ="0" max ="100" name="input3" id="shadow3"> <label for="input3">blur</label>
+            </div>
+            <div class="label_and_input">
+                <input type="range" min ="0" max ="100" name="input4" id="shadow4"> <label for="input4">range for shadow number: 4</label>
+            </div>
+            <div class="label_and_input">
+                <input type="color" name="color" id="color"> <label for="input4">shadow size</label>
+            </div>
+        </div>
+        <div class="item">
+            <div class="shadow" id="shadow_box"></div>
+        </div>
+    </div>
+</body>
+<script>
+    const ranges = Array.from(document.querySelectorAll('[id^="shadow"]'));
+    let shadowArray = ['','','','','black'];
+    
+    for (let i = 0; i < shadowArray.length-1; i++) {
+        ranges[i].addEventListener('input',()=>{
+            shadowArray[i] = ranges[i].value+'px ';
+        })
+    }
+
+    document.getElementById('color').addEventListener('input',(e)=>{
+        shadowArray[4] = e.target.value;
+    })
+
+    const shadowBox = document.getElementById('shadow_box')
+    document.addEventListener('input',() => {
+        const temp = shadowArray.join(''); 
+        // console.log(temp);
+        shadowBox.style.boxShadow = temp;
+    })
+
+
+</script>
+</html>
