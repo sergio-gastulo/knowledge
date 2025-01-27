@@ -1,0 +1,140 @@
+:root {
+  --main-header-color: rgb(162, 162, 241);
+  --main-text-color: white;
+  --main-background-image: url("https://static.animecorner.me/2023/10/1696343259-73013.png");
+  /* --main-background-image: url("https://static.animecorner.me/2023/10/1696343259-73013.png"); */
+  --main-background-image: url("https://blogcdn.allanime.day/uploads/2023/10/portada_sousou-no-frieren-21.jpg");
+}
+
+body {
+    background-color: rgb(24, 24, 24);
+    margin: 5% 20vw;
+}
+
+h1 {
+    color: var(--main-header-color);
+    font-family: monospace;
+    text-align: center;
+    justify-content: center;
+}
+
+h2 {
+    color: var(--main-header-color);
+    font-family: monospace;
+    text-align: center;
+}
+
+p {
+    color: var(--main-text-color);
+    font-family: sans-serif;
+    text-align: justify;
+    /* margin: 0px 15% 2%; */
+    line-height: 2cap;
+    /* text-decoration: underline; */
+    /* text-shadow: 0 0 500px rgb(43, 255, 0); */
+}
+
+button {
+    background-color: rgb(32, 31, 31);
+    border-color: aliceblue;
+    color: rgb(255, 255, 255);
+    /* margin: auto; */
+    padding: 1%;
+    /* position: auto;
+    text-align: center; */
+    /* deactivates hover property: */
+    /* border-radius: 30%; */
+}
+
+.myNewBox { 
+    /* basic position */
+    background-color: rgb(98, 190, 106);
+    width: 300px;
+    height: 200px;
+    margin: 50px auto;
+
+    /* text styling */
+    font-family: monospace;
+    font-size: 20px;
+    font-style: italic;
+    text-align: center;
+    color: rgb(0, 0, 0);
+
+    /* borders*/
+    border: 50px solid rgb(43, 85, 46);
+    /* border-width: 10px; */
+    /* border-color: rgb(43, 85, 46); */
+    border-radius: 20%;
+
+    /* flex for centering */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* box sizing */
+    box-sizing: content-box;
+}
+
+.bordBox{
+    box-sizing: border-box;
+}
+
+.myBackgroundDiv{
+    /* size and alignment */
+    display: flex;
+    width: 780px;
+    height: 200px;
+    margin: 500px auto;
+    box-sizing: border-box;
+    /* padding: 40%; */
+
+    /* text */
+    color: rgb(0, 0, 0);
+    font-style: italic;
+    font-weight: 500;
+    font-family: monospace;
+    justify-content: center;
+    align-items: center;
+    font-size: 16pt;
+
+    /* border */
+    border: 5px solid var(--main-header-color);
+    border-radius: 20px;
+
+    /* background */
+    /* background-image: var(--main-background-image); */
+    /* background-position: center; */
+    /* background-size: contain; */
+    /* background-repeat: no-repeat; */
+    /* background-attachment: fixed; */
+    /* background-color: transparent; */
+    /* as a shortcut */
+    background: var(--main-background-image) center / contain no-repeat fixed transparent;
+}
+
+.gradient{
+
+    width: 250px;
+    height: 250px;
+    margin: 50px auto;
+    
+    border-radius: 5%;
+    border-width: 5px;
+    /* background: linear-gradient(to left, transparent, var(--main-header-color), transparent); */
+    /* background: radial-gradient(var(--main-header-color),transparent 50%); */
+    background: conic-gradient(var(--main-header-color),transparent);
+    
+    /* flex for centering, for some reason i'm unaware */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shadow{
+    width: 200px;
+    height: 500px;
+    margin: 500px auto;
+    background-color: gray;
+    box-shadow: 50px 50px 50px 10px #000;
+
+}
