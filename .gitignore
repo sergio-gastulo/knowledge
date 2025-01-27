@@ -11,3 +11,4 @@ python_files/accounting/testing.ipynb
 .vscode
 cpp/**/*.exe
 java/**/*.class
+python/**/__pycache__
