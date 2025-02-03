@@ -1,86 +1,91 @@
-<#
-    Excel takes a while to start on my computer, i wanted to save time, so i created a ps1
-    file to help me on the automatization process:
-    It's a form which files the information into a certain csv, where my accounting information is saved
-#>
-
-<# 
-    Getting the day, only the day is necessary because i do this daily, so its literally impossible to fill
-    this form from month to month 
-#>
-
-
 #   Getting the date
-Write-Host " "
-$day = Read-Host 'Fecha (solo el dia)'
-$month = (Get-Date).Month.ToString("00")
-$year = (Get-Date).Year
-$date = "$day-$month-$year"
+do {
+    $day = Read-Host "`nThe day of the Date Object"
+    $isValid = [int]::TryParse($day, [ref]$null)
+    if (-not $isValid) {
+        Write-Host "`nInvalid input. The date must be a positive integer." -ForegroundColor Red
+    } elseif ($day -gt 31 ) {
+        Write-Host "`nToo big. Please parse the number properly." -ForegroundColor Red
+    }
+} while ((-not $isValid) -or ($day -gt 31))
+Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
+$day = "{0:D2}" -f $day
+$period = (Get-Date -Format 'MM-yyyy')
+$date = "$day-$period"
 
 #   Register the amount spent
-Write-Host " "
-$monto = READ-host 'Registre el monto ingresado'
+do {
+    $monto = Read-Host "`nEnter the amount spent"
+    $isValid = [double]::TryParse($monto, [ref]$null)
+    if (-not $isValid) {
+        Write-Host "Invalid input. The amount spent must be a positive real." -ForegroundColor Red
+    }
+} while (-not $isValid)
+$monto = [double]$monto
 
-#category list
-$wordList = @("BLIND", "CASA", "CELULAR", "COM_VAR", "INGRESO", "MENU", "PASAJE", "PERSONAL", "RECIBO", "USD_INC", "VARIOS")
+Write-Host "`nValid! Please move onto the next step`n" -ForegroundColor Green
 
-Write-Host " "
-"*"*100
-Write-Host " "
-#   Displaying the categories with numbers
-Write-Host "Seleccione la categoria correspondiente:"
-for ($i = 0; $i -lt $wordList.Length; $i++) {
-    Write-Host "$($i + 1) -> $($wordList[$i])"
+# Loading dictionary
+$categoryDict = @{
+    bl      =   'BLIND'
+    cas     =   'CASA'
+    cel     =   'CELULAR'
+    cvar    =   'COM_VAR'
+    ing     =   'INGRESO'
+    men     =   'MENU'
+    pas     =   'PASAJE'
+    per     =   'PERSONAL'
+    rec     =   'RECIBO'
+    usd     =   'USD_INC'
+    var     =   'var'
 }
-Write-Host " "
-"*"*100
-Write-Host " "
 
-#   Selecting the kind of spending the amount was
-$selectedNumber = Read-Host "Type category number"
+# Printing category list for reference
+$categoryDict | ConvertTo-Json -Depth 2
 
-#   Validating the input
-while (-not ($selectedNumber -match '^\d+$') -or [int]$selectedNumber -le 0 -or [int]$selectedNumber -gt $wordList.Length) {
-    $selectedNumber = Read-Host "Type valid category number"
-}
+do {
+    $key = Read-Host "`nSelect a key from the dictionary above"
+    if ($categoryDict.ContainsKey($key)) {
+        $category = $categoryDict[$key]
+        break
+    } else {
+        Write-Host "`nInvalid key, please try again." -ForegroundColor Red
+    }
+} while ($true)
+Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
 
-#   Getting the selected word
-$selectedWord = $wordList[[int]$selectedNumber - 1].Trim()
-
-# Solicitar una breve descripción al usuario
-Write-Host " "
-$descripcion = Read-Host "type descripcion -- no commas no ENHE "
-Write-Host " "
-
+# Amount spent description
+do {
+    $description = Read-Host "`nType description. No commas, and no 'enhe'"
+    if ($description -notmatch '[ñ,]') {
+        # At this moment, we can't prevent ñ from being prompted here.
+        # We trust on our user.
+        break
+    }
+    Write-Host "`nDescription must not include 'enhe' or comma (,)" -ForegroundColor Red
+} while ($true)
+Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
 
 #   The path of the csv file
 $paths = 'C:\Users\sgast\documents_personal\excel\cuentas.csv'
 
-if (([int]$monto -gt 200) -and (($selectedWord -ne "INGRESO") -and ($selectedWord -ne "USD_INC"))) {
+# What happens if the amount spent is greater than 200
+if (($monto -gt 200) -and (($category -ne "INGRESO") -and ($category -ne "USD_INC"))) {
     
-    <# Action to perform if the condition is true #>
-    $numMonths = Read-Host "How many months do you want to your value into your csv"
-    
-    $newMonto = ([int]$monto)/([int]$numMonths)
+    $numMonths  =   Read-Host "`nPlease add how many months you want to split your data."
+    $newMonto   =   ($monto)/([int]$numMonths)
+    $temp       =   [int](($date -split '-')[1])
     
     for ($i = 0; $i -lt $numMonths; $i++) {
+        $newDay            =   "{0:D2}" -f ($temp + $i) 
+        $newDate           =   [string]($date -replace '-\d{2}-', "-$newDay-")        
+        $newDescription    =   "$description tag: cuota $i"
         
-        $newMonth = ([int]$Month+$i).ToString("00")
-        $newDate = "$day-$newMonth-$year"        
-        $newDesc = "$descripcion tag: cuota $i"
         #   The row to be append on the csv file
-        $value = "$newDate,$newMonto,$newDesc,$selectedWord"
-        
-
+        $value = "$newDate,$newMonto,$newDescription,$category"
         add-content -path $paths -value "$value"
     }
 } else {
-    <# Action when all if and elseif conditions are false #>
-    
-    $value = "$date,$monto,$descripcion,$selectedWord"
-
-    <# 
-    Just appending the row to the csv file, withouth anything changed 
-    #>
+    $value = "$date,$monto,$description,$category"
     add-content -path $paths -value "$value"
 }
