@@ -11,4 +11,5 @@ python_files/accounting/testing.ipynb
 .vscode
 cpp/**/*.exe
 java/**/*.class
-python/**/__pycache__
+python_files/**/__pycache__
+python_files/**/*.wav
