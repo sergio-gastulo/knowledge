@@ -1,27 +1,32 @@
-from wolframclient.evaluation import WolframLanguageSession
-from wolframclient.language import wl
-from functions import recording, voice_to_string
+from openai import OpenAI
+from functions import recording
+import sys
+from datetime import datetime as dt
 
-session = WolframLanguageSession(kernel='C:\\Program Files\\Wolfram Research\\Wolfram\\14.1\\WolframKernel.exe')
+if len(sys.argv) > 1 and sys.argv[1] == 'w':
+    uprofile = 'c:\\Users\\sgast\\wolfram\\log\\'
+else:
+    uprofile = 'c:\\Users\\sgast\\log\\'
+
+print("logging work/day on ", uprofile)
 
 file = "output.wav"
 recording(file_name=file)
-text = voice_to_string(file_name=file)
 
-prompt = f"""
-Toma el siguiente texto transcrito de voz en español, corrígelo para que tenga puntuación adecuada (puntos, comas, signos de exclamación o interrogación, etc.), infiere cortes de párrafo donde sea necesario y arregla palabras que no tienen sentido usando el contexto de las 10 a 11 palabras más cercanas. También, agrega palabras pequeñas que puedan estar ausentes, como preposiciones, para que las frases tengan fluidez natural. Si encuentras términos en inglés que parecen incorrectos según el contexto, reemplázalos por la palabra más adecuada en inglés o español según corresponda. Mantén el estilo casual, como si fuera una narración relajada del día.
+client = OpenAI()
 
-Aquí está el texto original:
-{text}.
+with open(file, "rb") as f:
+    transcription = client.audio.transcriptions.create(
+        model="whisper-1", 
+        file=f,
+        prompt="Este audio es sobre mí registrando mi día a día en casa y en la compañía. Siempre ten en cuenta que vivo en Perú."
+        )
 
-Devuélveme el texto corregido con los cambios aplicados
-"""
+log_file_path = uprofile + dt.now().strftime('%a %d %b %Y -- %I.%M%p')+'.txt'
 
-transformed_text = session.evaluate(wl.Quiet(wl.LLMSynthesize(prompt)))
-print(f'The transformed text is {transformed_text}')
-session.terminate()
-
-
-
+with open(log_file_path, 'w') as f:
+    print("texto transcrito:")
+    print(transcription.text)
+    f.write(transcription.text)
 
 
