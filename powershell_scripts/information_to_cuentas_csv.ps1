@@ -1,14 +1,21 @@
 #   Getting the date
-do {
-    $day = Read-Host "`nThe day of the Date Object"
-    $isValid = [int]::TryParse($day, [ref]$null)
-    if (-not $isValid) {
-        Write-Host "`nInvalid input. The date must be a positive integer." -ForegroundColor Red
-    } elseif ($day -gt 31 ) {
-        Write-Host "`nToo big. Please parse the number properly." -ForegroundColor Red
+
+while ($true) {
+    try {
+        $dayNumber = [int](Read-Host "`nWrite the day")
+        Write-Host "`nParse successful." -ForegroundColor Green
+        Write-Host $dayNumber
+        if (($dayNumber -gt 31) -or ($dayNumber -lt 1)){
+            Write-Host "`nHowever, it must be a positive integer < 31" -ForegroundColor Red
+        } else {
+            break
+        }
     }
-} while ((-not $isValid) -or ($day -gt 31))
-Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
+    catch {
+        Write-Host "`nUps, something wrong happened while parsing. `nTry again`n" -ForegroundColor Red
+    }
+}
+
 $day = "{0:D2}" -f $day
 $period = (Get-Date -Format 'MM-yyyy')
 $date = "$day-$period"
@@ -37,7 +44,7 @@ $categoryDict = @{
     per     =   'PERSONAL'
     rec     =   'RECIBO'
     usd     =   'USD_INC'
-    var     =   'var'
+    var     =   'VARIOS'
 }
 
 # Printing category list for reference
@@ -57,9 +64,10 @@ Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
 # Amount spent description
 do {
     $description = Read-Host "`nType description. No commas, and no 'enhe'"
-    if ($description -notmatch '[ñ,]') {
+    if ($description -notmatch ',') {
         # At this moment, we can't prevent ñ from being prompted here.
         # We trust on our user.
+        # bug known at enhe_is_not_detected_from_console....ps1
         break
     }
     Write-Host "`nDescription must not include 'enhe' or comma (,)" -ForegroundColor Red

@@ -1,16 +1,10 @@
-while ($true) {
-    try {
-        $dayNumber = [int](Read-Host "`nWrite the day")
-        Write-Host "`nParse successful." -ForegroundColor Green
-        Write-Host $dayNumber
-        if (($dayNumber -gt 31) -or ($dayNumber -lt 1)){
-            Write-Host "`nHowever, it must be a positive integer < 31" -ForegroundColor Red
-        } else {
-            break
-        }
+do {
+    $description = Read-Host "`nType description. No commas, and no 'enhe'"
+    if ($description -notmatch ',') {
+        # At this moment, we can't prevent ñ from being prompted here.
+        # We trust on our user.
+        # bug known at enhe_is_not_detected_from_console....ps1
+        break
     }
-    catch {
-        <#Do this if a terminating edayNumberception happens#>
-        Write-Host "`nUps, something wrong happened while parsing. `nTry again`n" -ForegroundColor Red
-    }
-}
+    Write-Host "`nDescription must not include 'enhe' or comma (,)" -ForegroundColor Red
+} while ($true)
