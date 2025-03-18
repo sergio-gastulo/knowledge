@@ -16,9 +16,11 @@ while ($true) {
     }
 }
 
-$day = "{0:D2}" -f $day
+$day = "{0:D2}" -f $dayNumber
 $period = (Get-Date -Format 'MM-yyyy')
 $date = "$day-$period"
+
+Write-Host "`nParsed date: $date" -ForegroundColor Blue
 
 #   Register the amount spent
 do {
@@ -78,7 +80,7 @@ Write-Host "`nValid! Please move onto the next step" -ForegroundColor Green
 $paths = 'C:\Users\sgast\documents_personal\excel\cuentas.csv'
 
 # What happens if the amount spent is greater than 200
-if (($monto -gt 200) -and (($category -ne "INGRESO") -and ($category -ne "USD_INC"))) {
+if (($monto -gt 200) -and -not ($category -in @("BLIND","INGRESO","USD_INC"))) {
     
     $numMonths  =   Read-Host "`nPlease add how many months you want to split your data."
     $newMonto   =   ($monto)/([int]$numMonths)
