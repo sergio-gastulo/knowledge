@@ -1,0 +1,42 @@
+{
+    "BLIND": {
+        "label": "Caridad",
+        "color": "#1d0052"
+    }, 
+    "CASA": {
+        "label": "Gastos para la casa",
+        "color": "#381a64"
+    }, 
+    "CELULAR": {
+        "label": "Recarga celular",
+        "color": "#503477"
+    }, 
+    "COM_VAR": {
+        "label": "Comida no necesaria",
+        "color": "#694e89"
+    }, 
+    "INGRESO": {
+        "label": "Ingresos en bruto",
+        "color": "#81699c"
+    }, 
+    "MENU": {
+        "label": "Almuerzo indispensable",
+        "color": "#9a85b0"
+    }, 
+    "PASAJE": {
+        "label": "Pasaje",
+        "color": "#000000"
+    }, 
+    "PERSONAL": {
+        "label": "Gastos en Sergio",
+        "color": "#353535"
+    }, 
+    "RECIBO": {
+        "label": "Pagos fijos",
+        "color": "#c0a9e2"
+    }, 
+    "VARIOS": {
+        "label": "Salidas o regalos",
+        "color": "#7011f3"
+    }
+}
